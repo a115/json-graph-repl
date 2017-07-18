@@ -1,0 +1,201 @@
+{
+    "graph": {
+        "directed": true,
+        "type": "food graph",
+        "label": "Sample Food Graph",
+        "metadata": {
+            "version": "1.0"
+        },
+        "nodes": [
+            {
+                "id": "cat1",
+                "type": "category",
+                "label": "Vegetables",
+                "metadata": {
+                    "available_from": "2017-07-15",
+                    "available_to": "2017-11-21"
+                }
+            },
+            {
+                "id": "cat2",
+                "type": "category",
+                "label": "Fruits",
+                "metadata": {
+                    "available_from": "2017-07-18",
+                    "available_to": "2017-11-20"
+                }
+            },
+            {
+                "id": "cat3",
+                "type": "category",
+                "label": "Sweets",
+                "metadata": {
+                    "available_from": "2017-07-18",
+                    "available_to": "2017-11-18"
+                }
+            },
+            {
+                "id": "cat31",
+                "type": "category",
+                "label": "Cakes",
+                "metadata": {
+                    "available_from": "2017-07-18",
+                    "available_to": "2017-11-18"
+                }
+            },
+            {
+                "id": "cat32",
+                "type": "category",
+                "label": "Candies",
+                "metadata": {
+                    "available_from": "2017-05-18",
+                    "available_to": "2017-11-18",
+                    "max_per_day": 10
+                }
+            },
+            {
+                "id": "food1",
+                "type": "food",
+                "label": "Carrot",
+                "metadata": {
+                    "min_per_day": 1,
+                    "max_per_day": 5
+                }
+            },
+            {
+                "id": "food2",
+                "type": "food",
+                "label": "Onion",
+                "metadata": {
+                    "min_per_day": 0,
+                    "max_per_day": 1
+                }
+            },
+            {
+                "id": "food3",
+                "type": "food",
+                "label": "Apple",
+                "metadata": {
+                    "min_per_day": 2,
+                    "max_per_day": 6
+                }
+            },
+            {
+                "id": "food4",
+                "type": "food",
+                "label": "Orange",
+                "metadata": {
+                    "min_per_day": 1,
+                    "max_per_day": 3
+                }
+            },
+            {
+                "id": "food5",
+                "type": "food",
+                "label": "Fruit Cake",
+                "metadata": {
+                    "min_per_day": 0,
+                    "max_per_day": 1
+                }
+            },
+            {
+                "id": "food6",
+                "type": "food",
+                "label": "Chocolate Cake",
+                "metadata": {
+                    "min_per_day": 0,
+                    "max_per_day": 1,
+                    "available_from": "2017-07-25",
+                    "available_to": "2017-09-05"
+                }
+            },
+            {
+                "id": "food7",
+                "type": "food",
+                "label": "Caramel Candy",
+                "metadata": {
+                    "min_per_day": 0,
+                    "max_per_day": 6
+                }
+            },
+            {
+                "id": "food8",
+                "type": "food",
+                "label": "Hard Candy",
+                "metadata": {
+                    "min_per_day": 0,
+                    "max_per_day": 6
+                }
+            },
+            {
+                "id": "food9",
+                "type": "food",
+                "label": "Jelly Bean",
+                "metadata": {
+                    "min_per_day": 0,
+                    "max_per_day": 6
+                }
+            }
+        ],
+        "edges": [
+            {
+                "source": "cat1",
+                "relation": "has_a",
+                "target": "food1",
+                "metadata": {
+                    "available_to": "2017-09-29"
+                }
+            },
+            {
+                "source": "cat1",
+                "relation": "has_a",
+                "target": "food2"
+            },
+            {
+                "source": "cat2",
+                "relation": "has_a",
+                "target": "food3"
+            },
+            {
+                "source": "cat2",
+                "relation": "has_a",
+                "target": "food4"
+            },
+            {
+                "source": "cat3",
+                "relation": "has_a",
+                "target": "cat31"
+            },
+            {
+                "source": "cat3",
+                "relation": "has_a",
+                "target": "cat32"
+            },
+            {
+                "source": "cat31",
+                "relation": "has_a",
+                "target": "food5"
+            },
+            {
+                "source": "cat31",
+                "relation": "has_a",
+                "target": "food6"
+            },
+            {
+                "source": "cat32",
+                "relation": "has_a",
+                "target": "food7"
+            },
+            {
+                "source": "cat32",
+                "relation": "has_a",
+                "target": "food8"
+            },
+            {
+                "source": "cat32",
+                "relation": "has_a",
+                "target": "food8"
+            }
+        ]
+    }
+}
