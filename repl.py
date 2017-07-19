@@ -96,11 +96,24 @@ class App(Cmd):
 
     def do_ls(self, args):
         args, opts = self._parse_args(args)
-        for node_id in self._current_children():
+        current_children = {node_id: self._nodes[node_id] 
+                            for node_id in self._current_children()}
+        id_width = 1
+        type_width = 1
+        for node_id, node in current_children.items():
+            id_width = max(id_width, len(node_id))
+            type_width = max(type_width, len(node['type']))
+
+        sorted_children = sorted(current_children.items(), 
+                key=lambda n: n[1]['type'])
+
+        for node_id, node in sorted_children:
             output_line = "{}".format(node_id)
             if 'l' in opts:
                 node = self._nodes[node_id]
-                output_line += "\t{}\t{}".format(node['type'], node['label'])
+                output_line = '{0:<{id_width}} {1:<{type_width}} {2}'.format(
+                        node_id, node['type'], node['label'], 
+                        id_width=id_width, type_width=type_width)
             self.poutput(output_line)
 
     def do_info(self, args):
