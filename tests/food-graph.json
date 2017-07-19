@@ -194,7 +194,7 @@
             {
                 "source": "cat32",
                 "relation": "has_a",
-                "target": "food8"
+                "target": "food9"
             }
         ]
     }
