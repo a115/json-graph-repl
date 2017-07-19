@@ -6,7 +6,7 @@ from cmd2 import Cmd
 
 VERSION = '0.1'
 
-class App(Cmd):
+class JSONRepl(Cmd):
 
     def __init__(self, filepath):
         self.allow_cli_args = False
@@ -118,15 +118,16 @@ class App(Cmd):
 
     def do_info(self, args):
         args, opts = self._parse_args(args)
+        node = self.graph
         if self.cwd == '/':
-            self.poutput("CURRENT GRAPH: {} ('{}')".format(self.graph.get('label', ''), self.filepath))
-            self.poutput("GRAPH TYPE: {}".format(self.graph.get('type')))
-            self.poutput("NODES: {}".format(len(self.graph['nodes'])))
-            self.poutput("EDGES: {}".format(len(self.graph['edges'])))
-            self.poutput("META: {}".format(self.graph.get('metadata', {})))
+            self.poutput("CURRENT GRAPH: {} ('{}')".format(node.get('label', ''), self.filepath))
+            self.poutput("GRAPH TYPE: {}".format(node.get('type')))
+            self.poutput("NODES: {}".format(len(node['nodes'])))
+            self.poutput("EDGES: {}".format(len(node['edges'])))
         else:
             node = self._current_node()
             self.poutput("NODE ID: {}".format(node['id']))
             self.poutput("NODE TYPE: {}".format(node['type']))
             self.poutput("NODE LABEL: {}".format(node.get('label', '')))
-            self.poutput("META: {}".format(node.get('metadata', {})))
+        meta_output = json.dumps(node.get('metadata', {}), indent=4)
+        self.poutput(meta_output)
