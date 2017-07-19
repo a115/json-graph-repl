@@ -13,21 +13,24 @@ class App(Cmd):
         Cmd.__init__(self, use_ipython=True)
         self.filepath = filepath
         self._load_graph()
-        self.intro = "JSON Graph REPL v.{}. Working with: '{}'".format(
-                VERSION, filepath)
+        self.intro = "JSON Graph REPL v.{}".format(VERSION)
 
 
     def _load_graph(self):
         ''' Load the graph from a JSON file and pre-compute some helper 
         data structures for speedier access. '''
+        self.poutput("*** Loading graph from '{}'...".format(self.filepath))
         with open(self.filepath) as json_file:
             self.graph = json.load(json_file)['graph']
         self._set_cwd('/')
+        self._nodes = {}
         self._children = defaultdict(set)
         self._parents = defaultdict(set)
         for edge in self.graph['edges']:
             self._children[edge['source']].add(edge['target'])
             self._parents[edge['target']].add(edge['source'])
+        for node in self.graph['nodes']:
+            self._nodes[node['id']] = node
         self.root_nodes = [n['id'] for n in self.graph['nodes'] 
                            if not self._parents[n['id']]]
 
@@ -45,9 +48,25 @@ class App(Cmd):
     def _current_children(self):
         return self._children_for(self._current_node_id())
 
+
+    def _current_node(self):
+        return self._nodes[self._current_node_id()]
+
     def _set_cwd(self, cwd):
         self.cwd = cwd
         self.prompt = "{} >".format(self.cwd)
+
+
+    def _parse_args(self, args_str):
+        args = []
+        opts = []
+        for arg in args_str.split(' '):
+            if arg.startswith('-'):
+                arg = arg.strip('--').strip('-')
+                opts.append(arg)
+            else:
+                args.append(arg)
+        return args, opts
 
 
     ################################
@@ -76,5 +95,25 @@ class App(Cmd):
 
 
     def do_ls(self, args):
+        args, opts = self._parse_args(args)
         for node_id in self._current_children():
-            self.poutput(node_id)
+            output_line = "{}".format(node_id)
+            if 'l' in opts:
+                node = self._nodes[node_id]
+                output_line += "\t{}\t{}".format(node['type'], node['label'])
+            self.poutput(output_line)
+
+    def do_info(self, args):
+        args, opts = self._parse_args(args)
+        if self.cwd == '/':
+            self.poutput("CURRENT GRAPH: {} ('{}')".format(self.graph.get('label', ''), self.filepath))
+            self.poutput("GRAPH TYPE: {}".format(self.graph.get('type')))
+            self.poutput("NODES: {}".format(len(self.graph['nodes'])))
+            self.poutput("EDGES: {}".format(len(self.graph['edges'])))
+            self.poutput("META: {}".format(self.graph.get('metadata', {})))
+        else:
+            node = self._current_node()
+            self.poutput("NODE ID: {}".format(node['id']))
+            self.poutput("NODE TYPE: {}".format(node['type']))
+            self.poutput("NODE LABEL: {}".format(node.get('label', '')))
+            self.poutput("META: {}".format(node.get('metadata', {})))
