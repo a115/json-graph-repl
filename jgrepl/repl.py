@@ -4,7 +4,7 @@ from collections import defaultdict
 
 from cmd2 import Cmd
 
-VERSION = '0.1'
+VERSION = '0.1.0'
 
 class JSONRepl(Cmd):
 
