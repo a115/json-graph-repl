@@ -2,7 +2,7 @@
 
 import argparse
 
-from repl import JSONRepl
+from jgrepl.repl import JSONRepl
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
