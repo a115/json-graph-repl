@@ -1,14 +1,19 @@
-from setuptools import setup, find_packages
-
+import os
 from codecs import open
-from os import path
+from setuptools import setup, find_packages
 
 from jgrepl.repl import VERSION
 
-here = path.abspath(path.dirname(__file__))
+here = os.path.abspath(os.path.dirname(__file__))
 
-with open(path.join(here, 'README.md'), encoding='utf-8') as f:
+with open(os.path.join(here, 'README.md'), encoding='utf-8') as f:
     long_description = f.read()
+
+try:
+    import pypandoc
+    long_description = pypandoc.convert(os.path.join(here, 'README.md'), 'rst')
+except (ImportError, IOError):
+    pass
 
 setup(
         name='jgrepl',
@@ -24,7 +29,7 @@ setup(
             'Intended Audience :: Developers',
             'Topic :: Software Development',
             'Topic :: Scientific/Engineering :: Information Analysis',
-            'Topic :: Other/Nonlisted Topic'
+            'Topic :: Other/Nonlisted Topic',
             'License :: OSI Approved :: MIT License',
             'Programming Language :: Python :: 3',
             'Programming Language :: Python :: 3.6',
@@ -34,6 +39,7 @@ setup(
         install_requires=[
             'Cmd2>=0.7.5',
             ],
+        python_requires='>=3',
         entry_points={
             'console_scripts': [
                 'jgrepl=jgrepl.jgrepl:main',
