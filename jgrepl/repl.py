@@ -27,12 +27,12 @@ class JSONRepl(Cmd):
         self._children = defaultdict(set)
         self._parents = defaultdict(set)
         for edge in self.graph['edges']:
-            self._children[edge['source']].add(edge['target'])
-            self._parents[edge['target']].add(edge['source'])
+            self._children[edge['source'].upper()].add(edge['target'].upper())
+            self._parents[edge['target'].upper()].add(edge['source'].upper())
         for node in self.graph['nodes']:
-            self._nodes[node['id']] = node
-        self.root_nodes = [n['id'] for n in self.graph['nodes'] 
-                           if not self._parents[n['id']]]
+            self._nodes[node['id'].upper()] = node
+        self.root_nodes = [n['id'].upper() for n in self.graph['nodes'] 
+                           if not self._parents[n['id'].upper()]]
 
 
     def _current_node_id(self):
@@ -51,6 +51,16 @@ class JSONRepl(Cmd):
 
     def _current_node(self):
         return self._nodes[self._current_node_id()]
+
+
+    def _iter_paths_for(self, node_id, path=''):
+        path = os.path.join(node_id, path) if path else node_id
+        if not self._parents[node_id]:
+            yield os.path.join('/', path)
+        else:
+            for parent_id in self._parents[node_id]:
+                yield from self._iter_paths_for(parent_id, path=path)
+
 
     def _set_cwd(self, cwd):
         self.cwd = cwd
@@ -74,15 +84,17 @@ class JSONRepl(Cmd):
     #
 
     def do_pwd(self, _args):
+        ''' Print the current path '''
         self.poutput(self.cwd)
 
 
     def do_cd(self, args):
+        ''' Change to a new path '''
         if args.startswith('/'):
             self._set_cwd('/')
             args.strip('/')
  
-        for component in args.split('/'):
+        for component in args.upper().split('/'):
             if not component:
                 continue
             if component == '..':
@@ -95,6 +107,7 @@ class JSONRepl(Cmd):
 
 
     def do_ls(self, args):
+        ''' List all nodes under the current path '''
         args, opts = self._parse_args(args)
         current_children = {node_id: self._nodes[node_id] 
                             for node_id in self._current_children()}
@@ -116,7 +129,9 @@ class JSONRepl(Cmd):
                         id_width=id_width, type_width=type_width)
             self.poutput(output_line)
 
+
     def do_info(self, args):
+        ''' Print information about the current node '''
         args, opts = self._parse_args(args)
         node = self.graph
         if self.cwd == '/':
@@ -131,3 +146,13 @@ class JSONRepl(Cmd):
             self.poutput("NODE LABEL: {}".format(node.get('label', '')))
         meta_output = json.dumps(node.get('metadata', {}), indent=4)
         self.poutput(meta_output)
+
+
+    def do_find(self, args):
+        ''' Find all paths to a given node ID '''
+        args, opts = self._parse_args(args)
+        if args:
+            search_id = args[0].upper()
+            if search_id in self._nodes:
+                for path in self._iter_paths_for(search_id):
+                    self.poutput(path)
