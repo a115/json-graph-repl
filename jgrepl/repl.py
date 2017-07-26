@@ -4,7 +4,7 @@ from collections import defaultdict
 
 from cmd2 import Cmd
 
-VERSION = '0.1.2'
+VERSION = '0.1.3'
 
 class JSONRepl(Cmd):
 
@@ -14,6 +14,7 @@ class JSONRepl(Cmd):
         self.filepath = filepath
         self._load_graph()
         self.intro = "JSON Graph REPL v.{}".format(VERSION)
+        self._last_item = None
 
 
     def _load_graph(self):
@@ -64,7 +65,7 @@ class JSONRepl(Cmd):
 
     def _set_cwd(self, cwd):
         self.cwd = cwd
-        self.prompt = "{} >".format(self.cwd)
+        self.prompt = "{}> ".format(self.cwd)
 
 
     def _parse_args(self, args_str):
@@ -79,6 +80,21 @@ class JSONRepl(Cmd):
         return args, opts
 
 
+    def _match(self, node, attrs):
+        matches = {}
+        for attr, val in attrs.items():
+            if (attr in node) and ((not val) or (str(node[attr]) == val)):
+                matches[attr] = node[attr]
+                continue
+            data = node.get('metadata', {})
+            if (attr in data) and ((not val) or (str(data[attr]) == val)):
+                matches[attr] = data[attr]
+                continue
+            break
+        else:
+            return matches
+
+
     ################################
     # Generic command definitions:
     #
@@ -90,6 +106,9 @@ class JSONRepl(Cmd):
 
     def do_cd(self, args):
         ''' Change to a new path '''
+        if args == '$':
+            args = self._last_item or '/'
+
         if args.startswith('/'):
             self._set_cwd('/')
             args.strip('/')
@@ -155,4 +174,37 @@ class JSONRepl(Cmd):
             search_id = args[0].upper()
             if search_id in self._nodes:
                 for path in self._iter_paths_for(search_id):
+                    self._last_item = path
                     self.poutput(path)
+
+
+    def do_grep(self, args):
+        '''
+        Show IDs of nodes that match all of the supplied attributes. E.g:
+        
+          > grep node_type=food available_to
+
+        shows all nodes of type 'food' that have an 'available_to' attribute 
+        (regardless of its value)
+        '''
+        args, opts = self._parse_args(args)
+        attrs = {}
+        for arg in args:
+            attr, _, val = arg.partition('=')
+            attrs[attr] = val
+        for node_id, node in self._nodes.items():
+            matches = self._match(node, attrs)
+            if matches:
+                self.poutput(node_id)
+                for attr, val in matches.items():
+                    self.poutput("\t{} = {}".format(attr, val))
+                self.poutput("")
+
+    def do_explain(self, args):
+        ''' Display the names of all nodes in the current path. '''
+        components = self.cwd.split('/')
+        prefix = ""
+        for component in components:
+            if component:
+                self.poutput(prefix + self._nodes[component].get('label', component))
+                prefix += '\t'

@@ -21,7 +21,7 @@ Here is a sample session using the "food" graph:
 
     *** Loading graph from 'tests/food-graph.json'...
     JSON Graph REPL v.0.1.2
-    / >info         // The `info` command displays information about the current node or graph
+    /> info         // The `info` command displays information about the current node or graph
     CURRENT GRAPH: Sample Food Graph ('tests/food-graph.json')
     GRAPH TYPE: food graph
     NODES: 14
@@ -30,13 +30,13 @@ Here is a sample session using the "food" graph:
         "version": "1.0"  
     }
 
-    / >ls -l
+    /> ls -l
     CAT1 category Vegetables
     CAT2 category Fruits
     CAT3 category Sweets
 
-    / >cd CAT3          // Change to a new path. Note the prompt changes to reflect your location. 
-    /CAT3 >info
+    /> cd CAT3          // Change to a new path. Note the prompt changes to reflect your location. 
+    /CAT3> info
     NODE ID: cat3
     NODE TYPE: category
     NODE LABEL: Sweets
@@ -45,5 +45,8 @@ Here is a sample session using the "food" graph:
         "available_to": "2017-11-18"
     }
     
-    /CAT3 >find food8  // Print all paths to this node ID
+    /CAT3> find food8  // Print all paths to this node ID
     /CAT3/CAT32/FOOD8
+
+    /CAT3> cd $    // Switch to the last shown path
+    /CAT3/CAT32/FOOD8> 
