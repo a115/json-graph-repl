@@ -4,7 +4,7 @@ from collections import defaultdict
 
 from cmd2 import Cmd
 
-VERSION = '0.1.1'
+VERSION = '0.1.2'
 
 class JSONRepl(Cmd):
 
@@ -24,11 +24,13 @@ class JSONRepl(Cmd):
             self.graph = json.load(json_file)['graph']
         self._set_cwd('/')
         self._nodes = {}
+        self._edges = {}
         self._children = defaultdict(set)
         self._parents = defaultdict(set)
         for edge in self.graph['edges']:
             self._children[edge['source']].add(edge['target'])
             self._parents[edge['target']].add(edge['source'])
+            self._edges[(edge['source'], edge['target'])] = edge
         for node in self.graph['nodes']:
             self._nodes[node['id']] = node
         self.root_nodes = [n['id'] for n in self.graph['nodes'] 
